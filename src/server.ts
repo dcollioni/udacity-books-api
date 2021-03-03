@@ -2,7 +2,7 @@ import dotenv from 'dotenv'
 import cors from 'cors'
 import bodyParser from 'body-parser'
 import express from 'express'
-import { name, version } from './../package.json'
+import indexRouter from './controllers/index.router'
 
 dotenv.config();
 
@@ -12,10 +12,7 @@ dotenv.config();
 
   app.use(bodyParser.json())
   app.use(cors())
-
-  app.get('/', async (_req, res) => {
-    res.send(`${name} ${version}`)
-  })
+  app.use('/', indexRouter)
 
   app.listen(port, () => {
     console.log(`server running`)
