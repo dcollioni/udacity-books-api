@@ -1,10 +1,9 @@
-import dotenv from 'dotenv'
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+require('dotenv').config()
 import cors from 'cors'
 import bodyParser from 'body-parser'
 import express from 'express'
 import indexRouter from './controllers/index.router'
-
-dotenv.config();
 
 (async () => {
   const app = express()

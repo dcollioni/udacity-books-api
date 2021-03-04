@@ -1,6 +1,8 @@
 import { Router, Request, Response } from 'express'
 import Book from './../models/Book'
 import { celebrate, errors, Joi } from 'celebrate'
+import { CreateBook } from './../requests/book.requests'
+import { createBook } from './../services/book.services'
 
 const router: Router = Router()
 
@@ -15,9 +17,9 @@ router.post('/', celebrate({
     author: Joi.string().required()
   }).unknown(),
 }), async (req: Request, res: Response) => {
-  const { title, author } = req.body
-  const item = { title, author }
-  res.status(201).json(item)
+  const request: CreateBook = req.body
+  const book = await createBook(request)
+  res.status(201).json(book)
 })
 
 router.get('/:id', async (req: Request, res: Response) => {
