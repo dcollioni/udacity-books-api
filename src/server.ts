@@ -1,19 +1,19 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config()
-import cors from 'cors'
-import bodyParser from 'body-parser'
-import express from 'express'
-import indexRouter from './controllers/index.router'
+import config from './config'
+import app from './app'
 
-(async () => {
-  const app = express()
-  const port = process.env.PORT || 8080
+const startServer = () => {
+  const server = app()
 
-  app.use(bodyParser.json())
-  app.use(cors())
-  app.use('/', indexRouter)
+  server
+    .listen(config.port, () => {
+      console.log(`Server listening on port: ${config.port}`)
+    })
+    .on('error', err => {
+      console.error(err)
+      process.exit(1)
+    })
+}
 
-  app.listen(port, () => {
-    console.log(`server running`)
-  })
-})()
+startServer()

@@ -1,7 +1,7 @@
 import { Collection, Db, MongoClient } from 'mongodb'
 
 const url = process.env.MONGODB_URL
-const dbName = 'udagram-books'
+const dbName = 'udacity-books'
 
 let _client: MongoClient
 const client = async (): Promise<Db> => {
@@ -12,8 +12,6 @@ const client = async (): Promise<Db> => {
   return _client.db(dbName)
 }
 
-const books = async (): Promise<Collection> => {
+export const books = async (): Promise<Collection> => {
   return (await client()).collection('books')
 }
-
-export { books }
