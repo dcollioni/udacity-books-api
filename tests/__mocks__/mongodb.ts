@@ -1,3 +1,5 @@
+import { ObjectId } from 'mongodb'
+
 const collection = {
   find: jest.fn().mockReturnValue({ toArray: jest.fn() }),
   insertOne: jest.fn(),
@@ -12,13 +14,6 @@ const db = {
 
 const connection = {
   db: jest.fn().mockReturnValue(db)
-}
-
-const ObjectId = class {
-  private _id: string
-  constructor(id: string) {
-    this._id = id
-  }
 }
 
 const mongodb = {

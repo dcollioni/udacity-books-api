@@ -121,7 +121,7 @@ describe('book.service', () => {
     describe('given book repository deletes book', () => {
       let spyBookRepository: jest.SpyInstance
       beforeEach(async () => {
-        spyBookRepository = jest.spyOn(bookRepository, 'deleteBook')
+        spyBookRepository = jest.spyOn(bookRepository, 'deleteBook').mockResolvedValueOnce()
         await bookService.deleteBook(request)
       })
       it('should call book repository to delete book', async () => {

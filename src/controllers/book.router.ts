@@ -1,10 +1,14 @@
 import { Router, Request, Response } from 'express'
-import Book from './../models/Book'
 import { celebrate, errors, Joi } from 'celebrate'
 import { CreateBookRequest, GetBookRequest, UpdateBookRequest, DeleteBookRequest } from './../requests/book.requests'
 import bookService from './../services/book.service'
 import { createLogger } from '../utils/logger'
+import { ObjectId } from 'mongodb'
 const logger = createLogger('book.router')
+
+const isObjectId = (value: string, helpers: any) => {
+  return ObjectId.isValid(value) ? value : helpers.error("any.invalid")
+}
 
 const router: Router = Router()
 
@@ -34,7 +38,11 @@ router.post('/', celebrate({
   }
 })
 
-router.get('/:id', async (req: Request, res: Response) => {
+router.get('/:id', celebrate({
+  params: Joi.object({
+    id: Joi.string().custom(isObjectId),
+  }).unknown()
+}), async (req: Request, res: Response) => {
   const { id } = req.params
   const request: GetBookRequest = { _id: id }
 
@@ -52,6 +60,9 @@ router.get('/:id', async (req: Request, res: Response) => {
 })
 
 router.put('/:id', celebrate({
+  params: Joi.object({
+    id: Joi.string().custom(isObjectId),
+  }).unknown(),
   body: Joi.object({
     title: Joi.string().required(),
     author: Joi.string().required()
@@ -68,7 +79,11 @@ router.put('/:id', celebrate({
   }
 })
 
-router.delete('/:id', async (req: Request, res: Response) => {
+router.delete('/:id', celebrate({
+  params: Joi.object({
+    id: Joi.string().custom(isObjectId),
+  }).unknown()
+}), async (req: Request, res: Response) => {
   const { id } = req.params
   const request: DeleteBookRequest = { _id: id }
 
