@@ -1,9 +1,15 @@
 import { ObjectId } from 'mongodb'
 import Book from '../../models/Book'
-import { CreateBookRequest, UpdateBookRequest, GetBookRequest, DeleteBookRequest } from '../../requests/book.requests'
+import {
+  CreateBookRequest,
+  UpdateBookRequest,
+  GetBookRequest,
+  DeleteBookRequest,
+  ListBooksRequest,
+} from '../../requests/book.requests'
 import { books } from './../connections/mongodb.connection'
 
-const listBooks = async (): Promise<Book[]> => {
+const listBooks = async (request: ListBooksRequest): Promise<Book[]> => {
   const collection = await books()
   return collection.find().toArray()
 }
@@ -17,7 +23,10 @@ const createBook = async (request: CreateBookRequest): Promise<Book> => {
 
 const updateBook = async (request: UpdateBookRequest): Promise<Book> => {
   const collection = await books()
-  await collection.updateOne({ _id: new ObjectId(request._id) }, { $set: { title: request.title, author: request.author } })
+  await collection.updateOne(
+    { _id: new ObjectId(request._id) },
+    { $set: { title: request.title, author: request.author } },
+  )
   return request
 }
 

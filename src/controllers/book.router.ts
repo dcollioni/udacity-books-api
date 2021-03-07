@@ -1,20 +1,23 @@
 import { Router, Request, Response } from 'express'
 import { celebrate, errors, Joi } from 'celebrate'
-import { CreateBookRequest, GetBookRequest, UpdateBookRequest, DeleteBookRequest } from './../requests/book.requests'
+import { CustomHelpers } from 'joi'
+import { CreateBookRequest, GetBookRequest, UpdateBookRequest, DeleteBookRequest, ListBooksRequest } from './../requests/book.requests'
 import bookService from './../services/book.service'
 import { createLogger } from '../utils/logger'
 import { ObjectId } from 'mongodb'
 const logger = createLogger('book.router')
 
-const isObjectId = (value: string, helpers: any) => {
+const isObjectId = (value: string, helpers: CustomHelpers) => {
   return ObjectId.isValid(value) ? value : helpers.error("any.invalid")
 }
 
 const router: Router = Router()
 
-router.get('/', async (_req: Request, res: Response) => {
+router.get('/', async (req: Request, res: Response) => {
+  const { userId } = req
   try {
-    const books = await bookService.listBooks()
+    const request: ListBooksRequest = { userId }
+    const books = await bookService.listBooks(request)
     return res.json(books)
   } catch (err) {
     logger.error('failed to list books', err)
@@ -28,7 +31,8 @@ router.post('/', celebrate({
     author: Joi.string().required()
   }).unknown(),
 }), async (req: Request, res: Response) => {
-  const request: CreateBookRequest = req.body
+  const { userId } = req
+  const request: CreateBookRequest = { userId, ...req.body }
   try {
     const book = await bookService.createBook(request)
     return res.status(201).json(book)
@@ -43,8 +47,9 @@ router.get('/:id', celebrate({
     id: Joi.string().custom(isObjectId),
   }).unknown()
 }), async (req: Request, res: Response) => {
+  const { userId } = req
   const { id } = req.params
-  const request: GetBookRequest = { _id: id }
+  const request: GetBookRequest = { _id: id, userId }
 
   try {
     const book = await bookService.getBook(request)
@@ -68,8 +73,9 @@ router.put('/:id', celebrate({
     author: Joi.string().required()
   }).unknown(),
 }), async (req: Request, res: Response) => {
+  const { userId } = req
   const { id } = req.params
-  const request: UpdateBookRequest = { _id: id, ...req.body }
+  const request: UpdateBookRequest = { _id: id, userId, ...req.body }
   try {
     const book = await bookService.updateBook(request)
     return res.status(200).json(book)
@@ -84,8 +90,9 @@ router.delete('/:id', celebrate({
     id: Joi.string().custom(isObjectId),
   }).unknown()
 }), async (req: Request, res: Response) => {
+  const { userId } = req
   const { id } = req.params
-  const request: DeleteBookRequest = { _id: id }
+  const request: DeleteBookRequest = { _id: id, userId }
 
   try {
     await bookService.deleteBook(request)

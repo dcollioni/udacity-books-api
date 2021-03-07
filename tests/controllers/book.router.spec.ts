@@ -8,8 +8,10 @@ afterEach(() => {
 })
 
 describe('routes', () => {
+  const userId = 'google|abc123'
   describe('GET /books', () => {
     const path = '/books'
+    const listRequest = { userId }
     describe('given book service returns books', () => {
       let spyBookService: jest.SpyInstance, response: request.Response
       const mockBooks: Book[] = [
@@ -18,10 +20,10 @@ describe('routes', () => {
       ]
       beforeEach(async () => {
         spyBookService = jest.spyOn(bookService, 'listBooks').mockResolvedValueOnce(mockBooks)
-        response = await request(app()).get(path)
+        response = await request(app()).get(path).set('user-id', userId)
       })
       it('should list books using book service', async () => {
-        expect(spyBookService).toHaveBeenCalledTimes(1)
+        expect(spyBookService).toHaveBeenNthCalledWith(1, listRequest)
       })
       it('should return books and status 200', async () => {
         expect(response.body).toEqual(mockBooks)
@@ -33,7 +35,7 @@ describe('routes', () => {
       const mockError = new Error('failed to list books')
       beforeEach(async () => {
         jest.spyOn(bookService, 'listBooks').mockRejectedValueOnce(mockError)
-        response = await request(app()).get(path)
+        response = await request(app()).get(path).set('user-id', userId)
       })
       it('should return status 500', async () => {
         expect(response.status).toEqual(500)
@@ -45,13 +47,13 @@ describe('routes', () => {
     const path = '/books'
     describe('given a valid payload', () => {
       const payload = { title: 'a', author: 'a' }
-      const createRequest = {...payload}
+      const createRequest = { userId, ...payload }
       describe('given book service creates book', () => {
         let spyBookService: jest.SpyInstance, response: request.Response
         const mockBook: Book = { _id: '1', title: 'a', author: 'c' }
         beforeEach(async () => {
           spyBookService = jest.spyOn(bookService, 'createBook').mockResolvedValueOnce(mockBook)
-          response = await request(app()).post(path).send(payload)
+          response = await request(app()).post(path).send(payload).set('user-id', userId)
         })
         it('should create book using book service', async () => {
           expect(spyBookService).toHaveBeenNthCalledWith(1, createRequest)
@@ -66,7 +68,7 @@ describe('routes', () => {
         const mockError = new Error('failed to create book')
         beforeEach(async () => {
           jest.spyOn(bookService, 'createBook').mockRejectedValueOnce(mockError)
-          response = await request(app()).post(path).send(payload)
+          response = await request(app()).post(path).send(payload).set('user-id', userId)
         })
         it('should return status 500', async () => {
           expect(response.status).toEqual(500)
@@ -77,7 +79,7 @@ describe('routes', () => {
       const payload = { author: 'a' }
       let response: request.Response
       beforeEach(async () => {
-        response = await request(app()).post(path).send(payload)
+        response = await request(app()).post(path).send(payload).set('user-id', userId)
       })
       it('should return status 400', async () => {
         expect(response.status).toEqual(400)
@@ -87,7 +89,7 @@ describe('routes', () => {
       const payload = { title: 'a' }
       let response: request.Response
       beforeEach(async () => {
-        response = await request(app()).post(path).send(payload)
+        response = await request(app()).post(path).send(payload).set('user-id', userId)
       })
       it('should return status 400', async () => {
         expect(response.status).toEqual(400)
@@ -101,13 +103,13 @@ describe('routes', () => {
       const path = `/books/${bookId}`
       describe('given a valid payload', () => {
         const payload = { title: 'a', author: 'a' }
-        const updateRequest = { _id: bookId, ...payload }
+        const updateRequest = { _id: bookId, userId, ...payload }
         describe('given book service updates book', () => {
           let spyBookService: jest.SpyInstance, response: request.Response
           const mockBook: Book = { _id: '1', title: 'a', author: 'c' }
           beforeEach(async () => {
             spyBookService = jest.spyOn(bookService, 'updateBook').mockResolvedValueOnce(mockBook)
-            response = await request(app()).put(path).send(payload)
+            response = await request(app()).put(path).send(payload).set('user-id', userId)
           })
           it('should update book using book service', async () => {
             expect(spyBookService).toHaveBeenNthCalledWith(1, updateRequest)
@@ -122,7 +124,7 @@ describe('routes', () => {
           const mockError = new Error('failed to update book')
           beforeEach(async () => {
             jest.spyOn(bookService, 'updateBook').mockRejectedValueOnce(mockError)
-            response = await request(app()).put(path).send(payload)
+            response = await request(app()).put(path).send(payload).set('user-id', userId)
           })
           it('should return status 500', async () => {
             expect(response.status).toEqual(500)
@@ -133,7 +135,7 @@ describe('routes', () => {
         const payload = { author: 'a' }
         let response: request.Response
         beforeEach(async () => {
-          response = await request(app()).put(path).send(payload)
+          response = await request(app()).put(path).send(payload).set('user-id', userId)
         })
         it('should return status 400', async () => {
           expect(response.status).toEqual(400)
@@ -143,7 +145,7 @@ describe('routes', () => {
         const payload = { title: 'a' }
         let response: request.Response
         beforeEach(async () => {
-          response = await request(app()).put(path).send(payload)
+          response = await request(app()).put(path).send(payload).set('user-id', userId)
         })
         it('should return status 400', async () => {
           expect(response.status).toEqual(400)
@@ -156,7 +158,7 @@ describe('routes', () => {
       const payload = { title: 'a', author: 'a' }
       let response: request.Response
       beforeEach(async () => {
-        response = await request(app()).put(path).send(payload)
+        response = await request(app()).put(path).send(payload).set('user-id', userId)
       })
       it('should return status 400', async () => {
         expect(response.status).toEqual(400)
@@ -168,13 +170,13 @@ describe('routes', () => {
     describe('given a valid bookId', () => {
       const bookId = '60435f3cb9acc28819accc24'
       const path = `/books/${bookId}`
-      const getRequest = { _id: bookId }
+      const getRequest = { _id: bookId, userId }
       describe('given book service gets book', () => {
         let spyBookService: jest.SpyInstance, response: request.Response
         const mockBook: Book = { _id: '1', title: 'a', author: 'c' }
         beforeEach(async () => {
           spyBookService = jest.spyOn(bookService, 'getBook').mockResolvedValueOnce(mockBook)
-          response = await request(app()).get(path)
+          response = await request(app()).get(path).set('user-id', userId)
         })
         it('should get book using book service', async () => {
           expect(spyBookService).toHaveBeenNthCalledWith(1, getRequest)
@@ -189,7 +191,7 @@ describe('routes', () => {
         const mockBook: Book = null
         beforeEach(async () => {
           jest.spyOn(bookService, 'getBook').mockResolvedValueOnce(mockBook)
-          response = await request(app()).get(path)
+          response = await request(app()).get(path).set('user-id', userId)
         })
         it('should return status 404', async () => {
           expect(response.status).toEqual(404)
@@ -200,7 +202,7 @@ describe('routes', () => {
         const mockError = new Error('failed to update book')
         beforeEach(async () => {
           jest.spyOn(bookService, 'getBook').mockRejectedValueOnce(mockError)
-          response = await request(app()).get(path)
+          response = await request(app()).get(path).set('user-id', userId)
         })
         it('should return status 500', async () => {
           expect(response.status).toEqual(500)
@@ -212,7 +214,7 @@ describe('routes', () => {
       const path = `/books/${bookId}`
       let response: request.Response
       beforeEach(async () => {
-        response = await request(app()).get(path)
+        response = await request(app()).get(path).set('user-id', userId)
       })
       it('should return status 400', async () => {
         expect(response.status).toEqual(400)
@@ -224,12 +226,12 @@ describe('routes', () => {
     describe('given a valid bookId', () => {
       const bookId = '60435f3cb9acc28819accc24'
       const path = `/books/${bookId}`
-      const deleteRequest = { _id: bookId }
+      const deleteRequest = { _id: bookId, userId }
       describe('given book service deletes book', () => {
         let spyBookService: jest.SpyInstance, response: request.Response
         beforeEach(async () => {
           spyBookService = jest.spyOn(bookService, 'deleteBook').mockResolvedValueOnce()
-          response = await request(app()).delete(path)
+          response = await request(app()).delete(path).set('user-id', userId)
         })
         it('should delete book using book service', async () => {
           expect(spyBookService).toHaveBeenNthCalledWith(1, deleteRequest)
@@ -243,7 +245,7 @@ describe('routes', () => {
         const mockError = new Error('failed to delete book')
         beforeEach(async () => {
           jest.spyOn(bookService, 'deleteBook').mockRejectedValueOnce(mockError)
-          response = await request(app()).delete(path)
+          response = await request(app()).delete(path).set('user-id', userId)
         })
         it('should return status 500', async () => {
           expect(response.status).toEqual(500)
@@ -255,7 +257,7 @@ describe('routes', () => {
       const path = `/books/${bookId}`
       let response: request.Response
       beforeEach(async () => {
-        response = await request(app()).delete(path)
+        response = await request(app()).delete(path).set('user-id', userId)
       })
       it('should return status 400', async () => {
         expect(response.status).toEqual(400)

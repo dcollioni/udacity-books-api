@@ -1,13 +1,19 @@
-import Book from "../models/Book";
-import { CreateBookRequest, DeleteBookRequest, GetBookRequest, UpdateBookRequest } from "../requests/book.requests";
+import Book from '../models/Book'
+import {
+  ListBooksRequest,
+  CreateBookRequest,
+  DeleteBookRequest,
+  GetBookRequest,
+  UpdateBookRequest,
+} from '../requests/book.requests'
 import bookRepository from './../data/repositories/book.repository'
 
 const createBook = (request: CreateBookRequest): Promise<Book> => {
   return bookRepository.createBook(request)
 }
 
-const listBooks = (): Promise<Book[]> => {
-  return bookRepository.listBooks()
+const listBooks = (request: ListBooksRequest): Promise<Book[]> => {
+  return bookRepository.listBooks(request)
 }
 
 const updateBook = (request: UpdateBookRequest): Promise<Book> => {
