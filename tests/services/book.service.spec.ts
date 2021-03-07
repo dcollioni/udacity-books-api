@@ -7,7 +7,9 @@ afterEach(() => {
 })
 
 describe('book.service', () => {
+  const userId = 'google|abc123'
   describe('listBooks', () => {
+    const request = { userId }
     describe('given book repository returns books', () => {
       let spyBookRepository: jest.SpyInstance, books: Book[]
       const mockBooks: Book[] = [
@@ -16,7 +18,7 @@ describe('book.service', () => {
       ]
       beforeEach(async () => {
         spyBookRepository = jest.spyOn(bookRepository, 'listBooks').mockResolvedValueOnce(mockBooks)
-        books = await bookService.listBooks()
+        books = await bookService.listBooks(request)
       })
       it('should call book repository to list books', async () => {
         expect(spyBookRepository).toHaveBeenCalledTimes(1)
@@ -31,13 +33,13 @@ describe('book.service', () => {
         jest.spyOn(bookRepository, 'listBooks').mockRejectedValueOnce(mockError)
       })
       it('should reject with the error', async () => {
-        await expect(bookService.listBooks()).rejects.toBe(mockError)
+        await expect(bookService.listBooks(request)).rejects.toBe(mockError)
       })
     })
   })
 
   describe('createBook', () => {
-    const request = { title: 'a', author: 'b' }
+    const request = { title: 'a', author: 'b', userId }
     describe('given book repository creates book', () => {
       let spyBookRepository: jest.SpyInstance, book: Book
       const mockBook: Book = { _id: '1', title: 'a', author: 'c' }
@@ -64,7 +66,7 @@ describe('book.service', () => {
   })
 
   describe('updateBook', () => {
-    const request = { _id: '1', title: 'a', author: 'b' }
+    const request = { _id: '1', title: 'a', author: 'b', userId }
     describe('given book repository updates book', () => {
       let spyBookRepository: jest.SpyInstance, book: Book
       beforeEach(async () => {
@@ -90,7 +92,7 @@ describe('book.service', () => {
   })
 
   describe('getBook', () => {
-    const request = { _id: '1' }
+    const request = { _id: '1', userId }
     describe('given book repository gets book', () => {
       let spyBookRepository: jest.SpyInstance, book: Book
       const mockBook = { _id: '1', title: 'a', author: 'b' }
@@ -117,7 +119,7 @@ describe('book.service', () => {
   })
 
   describe('deleteBook', () => {
-    const request = { _id: '1' }
+    const request = { _id: '1', userId }
     describe('given book repository deletes book', () => {
       let spyBookRepository: jest.SpyInstance
       beforeEach(async () => {

@@ -13,18 +13,22 @@ afterEach(() => {
 })
 
 describe('book.repository', () => {
+  const userId = 'google|abc123'
   describe('listBooks', () => {
+    const request = { userId }
     describe('given mongodb books collection returns items', () => {
-      let spyBookCollection: jest.SpyInstance, items: Book[]
+      let spyBookCollection: jest.SpyInstance, spyBookCollectionFind: jest.SpyInstance, items: Book[]
       const mockBooks: Book[] = [
         { _id: '1', title: 'a', author: 'c' },
         { _id: '2', title: 'b', author: 'd' },
       ]
       beforeEach(async () => {
+        spyBookCollectionFind = jest.spyOn(collection, 'find')
         spyBookCollection = jest.spyOn(collection.find(), 'toArray').mockResolvedValueOnce(mockBooks as never)
-        items = await bookRepository.listBooks()
+        items = await bookRepository.listBooks(request)
       })
       it('should call mongodb book collection to list books', async () => {
+        expect(spyBookCollectionFind).toHaveBeenNthCalledWith(2, { userId })
         expect(spyBookCollection).toHaveBeenCalledTimes(1)
       })
       it('should return books', async () => {
@@ -37,13 +41,13 @@ describe('book.repository', () => {
         jest.spyOn(collection.find(), 'toArray').mockRejectedValueOnce(mockError as never)
       })
       it('should reject with the error', async () => {
-        await expect(bookRepository.listBooks()).rejects.toBe(mockError)
+        await expect(bookRepository.listBooks(request)).rejects.toBe(mockError)
       })
     })
   })
 
   describe('createBook', () => {
-    const request = { title: 'a', author: 'b' }
+    const request = { title: 'a', author: 'b', userId }
     describe('given mongodb book collection creates item', () => {
       let spyBookCollection: jest.SpyInstance, item: Book
       const mockItem: Book = { _id: '1', title: 'a', author: 'c' }
@@ -70,7 +74,7 @@ describe('book.repository', () => {
   })
 
   describe('updateBook', () => {
-    const request = { _id: '60435f3cb9acc28819accc24', title: 'a', author: 'b' }
+    const request = { _id: '60435f3cb9acc28819accc24', title: 'a', author: 'b', userId }
     describe('given mongodb book collection updates the item', () => {
       let spyBookCollection: jest.SpyInstance, item: Book
       beforeEach(async () => {
@@ -78,7 +82,7 @@ describe('book.repository', () => {
         item = await bookRepository.updateBook(request)
       })
       it('should call mongodb book collection to update book', async () => {
-        expect(spyBookCollection).toHaveBeenNthCalledWith(1, { _id: new ObjectId(request._id) }, { $set: { title: request.title, author: request.author } })
+        expect(spyBookCollection).toHaveBeenNthCalledWith(1, { _id: new ObjectId(request._id), userId: request.userId }, { $set: { title: request.title, author: request.author } })
       })
       it('should return item', async () => {
         expect(item).toEqual(request)
@@ -96,7 +100,7 @@ describe('book.repository', () => {
   })
 
   describe('getBook', () => {
-    const request = { _id: '60435f3cb9acc28819accc24' }
+    const request = { _id: '60435f3cb9acc28819accc24', userId }
     describe('given mongodb books collection returns item', () => {
       let spyBookCollection: jest.SpyInstance, item: Book
       const mockBook: Book = { _id: '1', title: 'a', author: 'c' }
@@ -105,7 +109,7 @@ describe('book.repository', () => {
         item = await bookRepository.getBook(request)
       })
       it('should call mongodb book collection to get book', async () => {
-        expect(spyBookCollection).toHaveBeenNthCalledWith(1, { _id: new ObjectId(request._id) })
+        expect(spyBookCollection).toHaveBeenNthCalledWith(1, { _id: new ObjectId(request._id), userId: request.userId })
       })
       it('should return book', async () => {
         expect(item).toEqual(mockBook)
@@ -123,7 +127,7 @@ describe('book.repository', () => {
   })
 
   describe('deleteBook', () => {
-    const request = { _id: '60435f3cb9acc28819accc24' }
+    const request = { _id: '60435f3cb9acc28819accc24', userId }
     describe('given mongodb book collection deletes the item', () => {
       let spyBookCollection: jest.SpyInstance
       beforeEach(async () => {
@@ -131,7 +135,7 @@ describe('book.repository', () => {
         await bookRepository.deleteBook(request)
       })
       it('should call mongodb book collection to delete book', async () => {
-        expect(spyBookCollection).toHaveBeenNthCalledWith(1, { _id: new ObjectId(request._id) })
+        expect(spyBookCollection).toHaveBeenNthCalledWith(1, { _id: new ObjectId(request._id), userId: request.userId })
       })
     })
     describe('given mongodb book collection rejects with an error', () => {
