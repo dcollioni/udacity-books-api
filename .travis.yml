@@ -12,6 +12,7 @@ install:
 
 # Scripts to be run such as tests
 before_script:
+  - npm install
   - npm run test
 
 script:
