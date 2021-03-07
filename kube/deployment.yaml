@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: udacity-books-api
+  labels:
+    app: udacity-books-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: udacity-books-api
+  template:
+    metadata:
+      labels:
+        app: udacity-books-api
+    spec:
+      containers:
+      - name: udacity-books-api
+        image: dcollioni/udacity-books-api
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "1024Mi"
+            cpu: "500m"
+        envFrom:
+          - secretRef:
+              name: udacity-books-api-secret
+        ports:
+        - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 3

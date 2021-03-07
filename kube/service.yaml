@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: udacity-books-api
+  name: udacity-books-api
+  namespace: default
+  selfLink: /api/v1/namespaces/default/services/udacity-books-api
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: udacity-books-api
+  sessionAffinity: None
+  type: ClusterIP
