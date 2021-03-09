@@ -2,6 +2,7 @@ import bookRepository from './../../../src/data/repositories/book.repository'
 import { books } from './../../../src/data/connections/mongodb.connection'
 import Book from '../../../src/models/Book'
 import { Collection, ObjectId } from 'mongodb'
+import { CreateBookRequest, UpdateBookRequest } from '../../../src/requests/book.requests'
 
 let collection: Collection
 beforeEach(async () => {
@@ -19,8 +20,8 @@ describe('book.repository', () => {
     describe('given mongodb books collection returns items', () => {
       let spyBookCollection: jest.SpyInstance, spyBookCollectionFind: jest.SpyInstance, items: Book[]
       const mockBooks: Book[] = [
-        { _id: '1', title: 'a', author: 'c' },
-        { _id: '2', title: 'b', author: 'd' },
+        { _id: '1', title: 'a', author: 'c', subject: 's' },
+        { _id: '2', title: 'b', author: 'd', subject: 's' },
       ]
       beforeEach(async () => {
         spyBookCollectionFind = jest.spyOn(collection, 'find')
@@ -47,10 +48,10 @@ describe('book.repository', () => {
   })
 
   describe('createBook', () => {
-    const request = { title: 'a', author: 'b', userId }
+    const request: CreateBookRequest = { title: 'a', author: 'b', subject: 's', userId }
     describe('given mongodb book collection creates item', () => {
       let spyBookCollection: jest.SpyInstance, item: Book
-      const mockItem: Book = { _id: '1', title: 'a', author: 'c' }
+      const mockItem: Book = { _id: '1', title: 'a', author: 'c', subject: 's' }
       beforeEach(async () => {
         spyBookCollection = jest.spyOn(collection, 'insertOne').mockResolvedValueOnce({ ops: [mockItem as never] } as never)
         item = await bookRepository.createBook(request)
@@ -74,7 +75,18 @@ describe('book.repository', () => {
   })
 
   describe('updateBook', () => {
-    const request = { _id: '60435f3cb9acc28819accc24', title: 'a', author: 'b', userId }
+    const request: UpdateBookRequest = {
+      _id: '60435f3cb9acc28819accc24',
+      title: 'a',
+      author: 'b',
+      subject: 's',
+      additionalInfo: 'af',
+      isbn: 'i',
+      publisher: 'p',
+      length: 2,
+      publicationYear: 2020,
+      userId
+    }
     describe('given mongodb book collection updates the item', () => {
       let spyBookCollection: jest.SpyInstance, item: Book
       beforeEach(async () => {
@@ -82,7 +94,18 @@ describe('book.repository', () => {
         item = await bookRepository.updateBook(request)
       })
       it('should call mongodb book collection to update book', async () => {
-        expect(spyBookCollection).toHaveBeenNthCalledWith(1, { _id: new ObjectId(request._id), userId: request.userId }, { $set: { title: request.title, author: request.author } })
+        expect(spyBookCollection).toHaveBeenNthCalledWith(1,
+          { _id: new ObjectId(request._id), userId: request.userId },
+          { $set: {
+            title: request.title,
+            author: request.author,
+            subject: request.subject,
+            additionalInfo: request.additionalInfo,
+            isbn: request.isbn,
+            publisher: request.publisher,
+            length: request.length,
+            publicationYear: request.publicationYear,
+          }})
       })
       it('should return item', async () => {
         expect(item).toEqual(request)
@@ -103,7 +126,7 @@ describe('book.repository', () => {
     const request = { _id: '60435f3cb9acc28819accc24', userId }
     describe('given mongodb books collection returns item', () => {
       let spyBookCollection: jest.SpyInstance, item: Book
-      const mockBook: Book = { _id: '1', title: 'a', author: 'c' }
+      const mockBook: Book = { _id: '1', title: 'a', author: 'c', subject: 's' }
       beforeEach(async () => {
         spyBookCollection = jest.spyOn(collection, 'findOne').mockResolvedValueOnce(mockBook as never)
         item = await bookRepository.getBook(request)

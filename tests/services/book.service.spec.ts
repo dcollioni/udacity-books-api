@@ -13,8 +13,8 @@ describe('book.service', () => {
     describe('given book repository returns books', () => {
       let spyBookRepository: jest.SpyInstance, books: Book[]
       const mockBooks: Book[] = [
-        { _id: '1', title: 'a', author: 'c' },
-        { _id: '2', title: 'b', author: 'd' },
+        { _id: '1', title: 'a', author: 'c', subject: 's' },
+        { _id: '2', title: 'b', author: 'd', subject: 's' },
       ]
       beforeEach(async () => {
         spyBookRepository = jest.spyOn(bookRepository, 'listBooks').mockResolvedValueOnce(mockBooks)
@@ -39,10 +39,10 @@ describe('book.service', () => {
   })
 
   describe('createBook', () => {
-    const request = { title: 'a', author: 'b', userId }
+    const request = { title: 'a', author: 'b', subject: 's', userId }
     describe('given book repository creates book', () => {
       let spyBookRepository: jest.SpyInstance, book: Book
-      const mockBook: Book = { _id: '1', title: 'a', author: 'c' }
+      const mockBook: Book = { _id: '1', title: 'a', author: 'c', subject: 's' }
       beforeEach(async () => {
         spyBookRepository = jest.spyOn(bookRepository, 'createBook').mockResolvedValueOnce(mockBook)
         book = await bookService.createBook(request)
@@ -66,7 +66,7 @@ describe('book.service', () => {
   })
 
   describe('updateBook', () => {
-    const request = { _id: '1', title: 'a', author: 'b', userId }
+    const request = { _id: '1', title: 'a', author: 'b', subject: 's', userId }
     describe('given book repository updates book', () => {
       let spyBookRepository: jest.SpyInstance, book: Book
       beforeEach(async () => {
@@ -95,7 +95,7 @@ describe('book.service', () => {
     const request = { _id: '1', userId }
     describe('given book repository gets book', () => {
       let spyBookRepository: jest.SpyInstance, book: Book
-      const mockBook = { _id: '1', title: 'a', author: 'b' }
+      const mockBook = { _id: '1', title: 'a', author: 'b', subject: 's' }
       beforeEach(async () => {
         spyBookRepository = jest.spyOn(bookRepository, 'getBook').mockResolvedValueOnce(mockBook)
         book = await bookService.getBook(request)

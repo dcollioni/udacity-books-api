@@ -1,5 +1,6 @@
 import request from 'supertest'
 import Book from '../../src/models/Book'
+import { CreateBookRequest, UpdateBookRequest } from '../../src/requests/book.requests'
 import app from './../../src/app'
 import bookService from './../../src/services/book.service'
 
@@ -15,8 +16,8 @@ describe('routes', () => {
     describe('given book service returns books', () => {
       let spyBookService: jest.SpyInstance, response: request.Response
       const mockBooks: Book[] = [
-        { _id: '1', title: 'a', author: 'c' },
-        { _id: '2', title: 'b', author: 'd' },
+        { _id: '1', title: 'a', author: 'c', subject: 's' },
+        { _id: '2', title: 'b', author: 'd', subject: 's' },
       ]
       beforeEach(async () => {
         spyBookService = jest.spyOn(bookService, 'listBooks').mockResolvedValueOnce(mockBooks)
@@ -46,11 +47,30 @@ describe('routes', () => {
   describe('POST /books', () => {
     const path = '/books'
     describe('given a valid payload', () => {
-      const payload = { title: 'a', author: 'a' }
-      const createRequest = { userId, ...payload }
+      const payload = {
+        title: 'a',
+        author: 'b',
+        subject: 'c',
+        additionalInfo: 'd',
+        isbn: 'e',
+        publisher: 'p',
+        length: '200',
+        publicationYear: '1999'
+      }
+      const createRequest: CreateBookRequest = {
+        userId,
+        title: payload.title,
+        author: payload.author,
+        subject: payload.subject,
+        additionalInfo: payload.additionalInfo,
+        isbn: payload.isbn,
+        publisher: payload.publisher,
+        length: parseInt(payload.length),
+        publicationYear: parseInt(payload.publicationYear)
+      }
       describe('given book service creates book', () => {
         let spyBookService: jest.SpyInstance, response: request.Response
-        const mockBook: Book = { _id: '1', title: 'a', author: 'c' }
+        const mockBook: Book = { _id: '1', title: 'a', author: 'b', subject: 'c' }
         beforeEach(async () => {
           spyBookService = jest.spyOn(bookService, 'createBook').mockResolvedValueOnce(mockBook)
           response = await request(app()).post(path).send(payload).set('user-id', userId)
@@ -76,7 +96,7 @@ describe('routes', () => {
       })
     })
     describe('given a payload without title', () => {
-      const payload = { author: 'a' }
+      const payload = { author: 'a', subject: 's' }
       let response: request.Response
       beforeEach(async () => {
         response = await request(app()).post(path).send(payload).set('user-id', userId)
@@ -86,7 +106,47 @@ describe('routes', () => {
       })
     })
     describe('given a payload without author', () => {
-      const payload = { title: 'a' }
+      const payload = { title: 'a', subject: 's' }
+      let response: request.Response
+      beforeEach(async () => {
+        response = await request(app()).post(path).send(payload).set('user-id', userId)
+      })
+      it('should return status 400', async () => {
+        expect(response.status).toEqual(400)
+      })
+    })
+    describe('given a payload without subject', () => {
+      const payload = { title: 'a', author: 'b' }
+      let response: request.Response
+      beforeEach(async () => {
+        response = await request(app()).post(path).send(payload).set('user-id', userId)
+      })
+      it('should return status 400', async () => {
+        expect(response.status).toEqual(400)
+      })
+    })
+    describe('given a payload without non numeric length', () => {
+      const payload = { title: 'a', author: 'b', subject: 'c', length: 'z' }
+      let response: request.Response
+      beforeEach(async () => {
+        response = await request(app()).post(path).send(payload).set('user-id', userId)
+      })
+      it('should return status 400', async () => {
+        expect(response.status).toEqual(400)
+      })
+    })
+    describe('given a payload without non numeric publication year', () => {
+      const payload = { title: 'a', author: 'b', subject: 'c', publicationYear: 'z' }
+      let response: request.Response
+      beforeEach(async () => {
+        response = await request(app()).post(path).send(payload).set('user-id', userId)
+      })
+      it('should return status 400', async () => {
+        expect(response.status).toEqual(400)
+      })
+    })
+    describe('given a payload with an unknown property', () => {
+      const payload = { title: 'a', author: 'b', subject: 'c', other: 'z' }
       let response: request.Response
       beforeEach(async () => {
         response = await request(app()).post(path).send(payload).set('user-id', userId)
@@ -102,11 +162,31 @@ describe('routes', () => {
       const bookId = '60435f3cb9acc28819accc24'
       const path = `/books/${bookId}`
       describe('given a valid payload', () => {
-        const payload = { title: 'a', author: 'a' }
-        const updateRequest = { _id: bookId, userId, ...payload }
+        const payload = {
+          title: 'a',
+          author: 'b',
+          subject: 'c',
+          additionalInfo: 'd',
+          isbn: 'e',
+          publisher: 'p',
+          length: '200',
+          publicationYear: '1999'
+        }
+        const updateRequest: UpdateBookRequest = {
+          _id: bookId,
+          userId,
+          title: payload.title,
+          author: payload.author,
+          subject: payload.subject,
+          additionalInfo: payload.additionalInfo,
+          isbn: payload.isbn,
+          publisher: payload.publisher,
+          length: parseInt(payload.length),
+          publicationYear: parseInt(payload.publicationYear)
+        }
         describe('given book service updates book', () => {
           let spyBookService: jest.SpyInstance, response: request.Response
-          const mockBook: Book = { _id: '1', title: 'a', author: 'c' }
+          const mockBook: Book = { _id: '1', title: 'a', author: 'c', subject: 's' }
           beforeEach(async () => {
             spyBookService = jest.spyOn(bookService, 'updateBook').mockResolvedValueOnce(mockBook)
             response = await request(app()).put(path).send(payload).set('user-id', userId)
@@ -132,7 +212,7 @@ describe('routes', () => {
         })
       })
       describe('given a payload without title', () => {
-        const payload = { author: 'a' }
+        const payload = { author: 'a', subject: 's' }
         let response: request.Response
         beforeEach(async () => {
           response = await request(app()).put(path).send(payload).set('user-id', userId)
@@ -142,7 +222,47 @@ describe('routes', () => {
         })
       })
       describe('given a payload without author', () => {
-        const payload = { title: 'a' }
+        const payload = { title: 'a', subject: 's' }
+        let response: request.Response
+        beforeEach(async () => {
+          response = await request(app()).put(path).send(payload).set('user-id', userId)
+        })
+        it('should return status 400', async () => {
+          expect(response.status).toEqual(400)
+        })
+      })
+      describe('given a payload without subject', () => {
+        const payload = { title: 'a', author: 'b' }
+        let response: request.Response
+        beforeEach(async () => {
+          response = await request(app()).put(path).send(payload).set('user-id', userId)
+        })
+        it('should return status 400', async () => {
+          expect(response.status).toEqual(400)
+        })
+      })
+      describe('given a payload with a non numeric length', () => {
+        const payload = { title: 'a', author: 'b', subject: 's', length: 'z' }
+        let response: request.Response
+        beforeEach(async () => {
+          response = await request(app()).put(path).send(payload).set('user-id', userId)
+        })
+        it('should return status 400', async () => {
+          expect(response.status).toEqual(400)
+        })
+      })
+      describe('given a payload with a non numeric publication year', () => {
+        const payload = { title: 'a', author: 'b', subject: 's', publicationYear: 'z' }
+        let response: request.Response
+        beforeEach(async () => {
+          response = await request(app()).put(path).send(payload).set('user-id', userId)
+        })
+        it('should return status 400', async () => {
+          expect(response.status).toEqual(400)
+        })
+      })
+      describe('given a payload with an unknown property', () => {
+        const payload = { title: 'a', author: 'b', subject: 's', other: 'z' }
         let response: request.Response
         beforeEach(async () => {
           response = await request(app()).put(path).send(payload).set('user-id', userId)
@@ -173,7 +293,7 @@ describe('routes', () => {
       const getRequest = { _id: bookId, userId }
       describe('given book service gets book', () => {
         let spyBookService: jest.SpyInstance, response: request.Response
-        const mockBook: Book = { _id: '1', title: 'a', author: 'c' }
+        const mockBook: Book = { _id: '1', title: 'a', author: 'c', subject: 's' }
         beforeEach(async () => {
           spyBookService = jest.spyOn(bookService, 'getBook').mockResolvedValueOnce(mockBook)
           response = await request(app()).get(path).set('user-id', userId)

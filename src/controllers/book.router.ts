@@ -28,8 +28,14 @@ router.get('/', async (req: Request, res: Response) => {
 router.post('/', celebrate({
   body: Joi.object({
     title: Joi.string().required(),
-    author: Joi.string().required()
-  }).unknown(),
+    author: Joi.string().required(),
+    subject: Joi.string().required(),
+    additionalInfo: Joi.string(),
+    isbn: Joi.string(),
+    publisher: Joi.string(),
+    length: Joi.number(),
+    publicationYear: Joi.number()
+  }),
 }), async (req: Request, res: Response) => {
   const { userId } = req
   const request: CreateBookRequest = { userId, ...req.body }
@@ -45,7 +51,7 @@ router.post('/', celebrate({
 router.get('/:id', celebrate({
   params: Joi.object({
     id: Joi.string().custom(isObjectId),
-  }).unknown()
+  })
 }), async (req: Request, res: Response) => {
   const { userId } = req
   const { id } = req.params
@@ -67,11 +73,17 @@ router.get('/:id', celebrate({
 router.put('/:id', celebrate({
   params: Joi.object({
     id: Joi.string().custom(isObjectId),
-  }).unknown(),
+  }),
   body: Joi.object({
     title: Joi.string().required(),
-    author: Joi.string().required()
-  }).unknown(),
+    author: Joi.string().required(),
+    subject: Joi.string().required(),
+    additionalInfo: Joi.string(),
+    isbn: Joi.string(),
+    publisher: Joi.string(),
+    length: Joi.number(),
+    publicationYear: Joi.number()
+  }),
 }), async (req: Request, res: Response) => {
   const { userId } = req
   const { id } = req.params
@@ -88,7 +100,7 @@ router.put('/:id', celebrate({
 router.delete('/:id', celebrate({
   params: Joi.object({
     id: Joi.string().custom(isObjectId),
-  }).unknown()
+  })
 }), async (req: Request, res: Response) => {
   const { userId } = req
   const { id } = req.params

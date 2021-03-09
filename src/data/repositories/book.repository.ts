@@ -23,11 +23,11 @@ const createBook = async (request: CreateBookRequest): Promise<Book> => {
 }
 
 const updateBook = async (request: UpdateBookRequest): Promise<Book> => {
-  const { _id, userId } = request
+  const { _id, userId, ...fields } = request
   const collection = await books()
   await collection.updateOne(
     { _id: new ObjectId(_id), userId },
-    { $set: { title: request.title, author: request.author } },
+    { $set: { ...fields } },
   )
   return request
 }
