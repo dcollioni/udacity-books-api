@@ -1,4 +1,5 @@
 import AWS from 'aws-sdk'
+import { GetSignedUrlRequest } from '../requests/aws.requests'
 import config from './../config'
 
 const s3 = new AWS.S3({
@@ -8,23 +9,23 @@ const s3 = new AWS.S3({
 })
 
 // Generates an AWS signed URL for retrieving objects
-const getGetSignedUrl = (key: string): string => {
+const getGetSignedUrl = (request: GetSignedUrlRequest): string => {
   const signedUrlExpireSeconds = 60 * 5
 
   return s3.getSignedUrl('getObject', {
     Bucket: config.aws.mediaBucket,
-    Key: key,
+    Key: request.fileName,
     Expires: signedUrlExpireSeconds,
   })
 }
 
 // Generates an AWS signed URL for uploading objects
-const getPutSignedUrl = (key: string): string => {
+const getPutSignedUrl = (request: GetSignedUrlRequest): string => {
   const signedUrlExpireSeconds = 60 * 5
 
   return s3.getSignedUrl('putObject', {
     Bucket: config.aws.mediaBucket,
-    Key: key,
+    Key: request.fileName,
     Expires: signedUrlExpireSeconds,
   })
 }

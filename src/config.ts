@@ -7,7 +7,7 @@ const config = {
   mongoUri: process.env.MONGODB_URI,
   aws: {
     region: process.env.AWS_REGION,
-    mediaBucket: process.env.AWS_MEDIA_BUCKET
+    mediaBucket: process.env.AWS_BUCKET
   }
 }
 
