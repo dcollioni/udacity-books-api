@@ -8,4 +8,5 @@ export default interface Book {
   additionalInfo?: string
   length?: number
   publicationYear?: number
+  coverUrl?: string
 }

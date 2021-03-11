@@ -55,7 +55,8 @@ describe('routes', () => {
         isbn: 'e',
         publisher: 'p',
         length: '200',
-        publicationYear: '1999'
+        publicationYear: '1999',
+        coverUrl: 'c'
       }
       const createRequest: CreateBookRequest = {
         userId,
@@ -66,7 +67,8 @@ describe('routes', () => {
         isbn: payload.isbn,
         publisher: payload.publisher,
         length: parseInt(payload.length),
-        publicationYear: parseInt(payload.publicationYear)
+        publicationYear: parseInt(payload.publicationYear),
+        coverUrl: payload.coverUrl,
       }
       describe('given book service creates book', () => {
         let spyBookService: jest.SpyInstance, response: request.Response
@@ -170,7 +172,8 @@ describe('routes', () => {
           isbn: 'e',
           publisher: 'p',
           length: '200',
-          publicationYear: '1999'
+          publicationYear: '1999',
+          coverUrl: '1999'
         }
         const updateRequest: UpdateBookRequest = {
           _id: bookId,
@@ -182,7 +185,8 @@ describe('routes', () => {
           isbn: payload.isbn,
           publisher: payload.publisher,
           length: parseInt(payload.length),
-          publicationYear: parseInt(payload.publicationYear)
+          publicationYear: parseInt(payload.publicationYear),
+          coverUrl: payload.coverUrl
         }
         describe('given book service updates book', () => {
           let spyBookService: jest.SpyInstance, response: request.Response

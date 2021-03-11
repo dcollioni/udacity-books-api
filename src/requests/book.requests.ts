@@ -3,6 +3,7 @@ export interface ListBooksRequest {
 }
 
 export interface CreateBookRequest {
+  userId: string
   title: string
   author: string
   subject: string
@@ -11,11 +12,12 @@ export interface CreateBookRequest {
   additionalInfo?: string
   length?: number
   publicationYear?: number
-  userId: string
+  coverUrl?: string
 }
 
 export interface UpdateBookRequest {
   _id: string
+  userId: string
   title: string
   author: string
   subject: string
@@ -24,7 +26,7 @@ export interface UpdateBookRequest {
   additionalInfo?: string
   length?: number
   publicationYear?: number
-  userId: string
+  coverUrl?: string
 }
 
 export interface GetBookRequest {

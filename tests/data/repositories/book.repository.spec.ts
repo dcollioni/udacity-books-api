@@ -77,6 +77,7 @@ describe('book.repository', () => {
   describe('updateBook', () => {
     const request: UpdateBookRequest = {
       _id: '60435f3cb9acc28819accc24',
+      userId,
       title: 'a',
       author: 'b',
       subject: 's',
@@ -85,7 +86,7 @@ describe('book.repository', () => {
       publisher: 'p',
       length: 2,
       publicationYear: 2020,
-      userId
+      coverUrl: 'c',
     }
     describe('given mongodb book collection updates the item', () => {
       let spyBookCollection: jest.SpyInstance, item: Book
@@ -105,6 +106,7 @@ describe('book.repository', () => {
             publisher: request.publisher,
             length: request.length,
             publicationYear: request.publicationYear,
+            coverUrl: request.coverUrl,
           }})
       })
       it('should return item', async () => {

@@ -34,7 +34,8 @@ router.post('/', celebrate({
     isbn: Joi.string(),
     publisher: Joi.string(),
     length: Joi.number(),
-    publicationYear: Joi.number()
+    publicationYear: Joi.number(),
+    coverUrl: Joi.string(),
   }),
 }), async (req: Request, res: Response) => {
   const { userId } = req
@@ -82,7 +83,8 @@ router.put('/:id', celebrate({
     isbn: Joi.string(),
     publisher: Joi.string(),
     length: Joi.number(),
-    publicationYear: Joi.number()
+    publicationYear: Joi.number(),
+    coverUrl: Joi.string(),
   }),
 }), async (req: Request, res: Response) => {
   const { userId } = req
