@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: udacity-book-api-ingress
+  annotations:
+    kubernetes.io/ingress.class: 'nginx'
+    nginx.ingress.kubernetes.io/secure-backends: 'true'
+    nginx.ingress.kubernetes.io/auth-url: http://udacity-auth-api.default.svc.cluster.local/auth
+    nginx.ingress.kubernetes.io/auth-response-headers: user-id
+    nginx.ingress.kubernetes.io/limit-rpm: '20'
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+spec:
+  rules:
+    - host: udacity-books-api
+      http:
+        paths:
+          - backend:
+              service:
+                name: udacity-books-api
+                port:
+                  number: 8080
+            path: /
+            pathType: Prefix
+---

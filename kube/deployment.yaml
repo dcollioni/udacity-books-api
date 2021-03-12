@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: udacity-books-api
-        image: dcollioni/udacity-books-api
+        image: dcollioni/udacity-books-api:0.0.1
         imagePullPolicy: Always
         resources:
           requests:
