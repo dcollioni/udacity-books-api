@@ -9,10 +9,12 @@ metadata:
     nginx.ingress.kubernetes.io/auth-url: http://udacity-auth-api.default.svc.cluster.local:8080/auth
     nginx.ingress.kubernetes.io/auth-response-headers: user-id
     nginx.ingress.kubernetes.io/limit-rpm: '20'
-    # nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/enable-cors: 'true'
+    nginx.ingress.kubernetes.io/cors-allow-headers: 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization,user-id'
 spec:
   rules:
-    - http:
+    - host: api.udacity-books.tk
+      http:
         paths:
           - backend:
               serviceName: udacity-books-api

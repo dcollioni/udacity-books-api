@@ -1,17 +1,20 @@
 # udacity-books-api
 
 ## run locally
-1. create a `.env` file in the root with the following:
+- create a `.env` file in the root with the following:
   ```
-  MONGODB_URI="mongodb+srv://user:password@host/db"
+  MONGODB_URI=...
+  AWS_REGION=...
+  AWS_PROFILE=...
+  AWS_BUCKET=...
+  AWS_ACCESS_KEY_ID=...
+  AWS_SECRET_ACCESS_KEY=...
   ```
-2. run `npm install`
-3. run `npm run dev`
+- run `npm install`
+- run `npm run dev`
 
 ## run tests
-1. run `npm run test`
+- run `npm run test`
 
 ## deploy to kube
-1. run `kubectl apply -f ./kube`
-2. run `./deploy-secret.sh`
-2. run `./deploy-autoscale.sh`
+- run `./kube/deploy.sh`
